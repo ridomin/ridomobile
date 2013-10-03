@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>SP Client Demo</title>
+    
+        <script src="//ajax.aspnetcdn.com/ajax/4.0/1/MicrosoftAjax.js"></script>
+        <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>        
+        <!-- 
+            http://msdn.microsoft.com/en-us/library/fp179927.aspx
+            -->
+    <script type="text/javascript">
+         var hostweburl = "http://rido.sharepoint.com";
+         var appweburl = hostweburl +  "/sites/AppStudioTest";
+
+         // Load the required SharePoint libraries.
+         $(document).ready(function () {
+
+             
+
+             // Resources are in URLs in the form:
+             // web_url/_layouts/15/resource
+             var scriptbase = hostweburl + "/_layouts/15/";
+
+             // Load the js file and continue to the 
+             //   success event handler.
+             $.getScript(scriptbase + "SP.RequestExecutor.js", execCrossDomainRequest);
+         });
+
+         // Function to prepare and issue the request to get
+         //  SharePoint data.
+         function execCrossDomainRequest() {
+             var executor;
+
+             // Initialize the RequestExecutor with the app web URL.
+             executor = new SP.RequestExecutor(appweburl);
+
+             // Issue the call against the host web.
+             // To get the title using REST we can hit the endpoint:
+             //      app_web_url/_api/SP.AppContextSite(@target)/web/title?@target='siteUrl'
+             // The response formats the data in the JSON format.
+             // The functions successHandler and errorHandler attend the
+             //      success and error events respectively.
+             executor.executeAsync(
+                 {
+                     url:
+                         appweburl +
+                         "/_api/SP.AppContextSite(@target)/web/title?@target='" +
+                         hostweburl + "'",
+                     method: "GET",
+                     headers: { "Accept": "application/json; odata=verbose" },
+                     success: successHandler,
+                     error: errorHandler
+                 }
+             );
+         }
+
+         // Function to handle the success event.
+         // Prints the host web's title to the page.
+         function successHandler(data) {
+             var jsonObject = JSON.parse(data.body);
+
+             document.getElementById("debugDiv").innerHTML =
+                 "<b>" + jsonObject.d.Title + "</b>";
+         }
+
+         // Function to handle the error event.
+         // Prints the error message to the page.
+         function errorHandler(data, errorCode, errorMessage) {
+             document.getElementById("debugDiv").innerText =
+                 "Could not complete cross-domain call: " + errorMessage;
+         }
+         
+        </script>
+</head>
+<body>
+    <button id="buttonStart">Start</button>
+    <div id="debugDiv"></div>
+</body>
+</html>

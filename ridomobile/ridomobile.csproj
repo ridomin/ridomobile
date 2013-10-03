@@ -96,6 +96,9 @@
   <ItemGroup>
     <Content Include="default.html" />
     <Content Include="Global.asax" />
+    <Content Include="SPClient\default.html" />
+    <Content Include="SPClient\sp.js" />
+    <Content Include="SPClient\sp.runtime.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
